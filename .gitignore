@@ -1,0 +1,6 @@
+*.vscode
+.env
+/bin/
+*.exe
+coverage.out
+webhook_delivery_platform_interview_challenge.md
