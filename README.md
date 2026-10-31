@@ -1,7 +1,6 @@
 # Webhook Delivery Platform
 
 A backend service that accepts platform events (e.g. `user.created`, `payment.succeeded`) and delivers them as signed HTTP POSTs to customer-registered webhook endpoints. Delivery is asynchronous and every attempt is recorded. Failures are retried with exponential backoff.
----
 
 ## Tech stack
 
