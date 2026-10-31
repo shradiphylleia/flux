@@ -1,11 +1,6 @@
 # Webhook Delivery Platform
 
 A backend service that accepts platform events (e.g. `user.created`, `payment.succeeded`) and delivers them as signed HTTP POSTs to customer-registered webhook endpoints. Delivery is asynchronous and every attempt is recorded. Failures are retried with exponential backoff.
-
-The task brief is in [webhook_delivery_platform_interview_challenge.md](webhook_delivery_platform_interview_challenge.md) and the initial design notes are in [design.md](design.md).
-
-> **Status: scaffold.** The infrastructure is in place: config, logging, Postgres pool and migrations, the Redis delay queue, the worker pool, HMAC signing, backoff, the router and health check. The endpoint handlers and the worker's `process` step are still stubs that return `501` or do nothing. Each stub has a `TODO` describing how it should behave. See [Implementation status](#implementation-status).
-
 ---
 
 ## Tech stack
