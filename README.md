@@ -13,29 +13,6 @@ A backend service that accepts platform events (e.g. `user.created`, `payment.su
 | Logging        | `log/slog`, JSON to stdout               |
 | Local infra    | Docker Compose                           |
 
-## Architecture
-
-```
-            POST /webhooks, POST /events, GET /deliveries/{id}
-                              │
-                         ┌────▼────┐   1 txn: insert event +
- producers ─────────────►│   api   │── fan-out deliveries ──►┌────────────┐
-                         └────┬────┘                         │ PostgreSQL │
-                              │ ZADD delivery_id @ due_at    │  (truth)   │
-                         ┌────▼────┐                         └─────▲──────┘
-                         │  Redis  │  sorted set:                  │
-                         │  ZSET   │  "what is due when"           │ lease, attempts,
-                         └────┬────┘                               │ status updates
-                              │ Lua pop-due (atomic)               │
-                         ┌────▼─────────────────────────────────────┴─┐
-                         │ worker  (N goroutines, bounded pool)       │
-                         │  claim lease → sign → POST → record → retry│
-                         └────────────────────┬───────────────────────┘
-                                              │ HTTPS POST + Webhook-Signature
-                                              ▼
-                                     customer endpoints
-```
-
 **Flow**
 
 1. `POST /events` validates the event. In a single transaction it inserts the event and one `deliveries` row for each enabled webhook subscribed to that type. After the commit it schedules each delivery ID in Redis and returns `202 Accepted` without waiting for any HTTP calls.
